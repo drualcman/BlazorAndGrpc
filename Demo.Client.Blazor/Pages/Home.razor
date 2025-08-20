@@ -1,0 +1,46 @@
+﻿@page "/"
+@inject GoogleClient Client
+@inject IJSRuntime JS
+
+<PageTitle>Home</PageTitle>
+
+<table>
+    <tbody>
+
+@foreach (var item in Points)
+{
+        <tr>
+            <td>@item.Description</td>
+            <td>@item.LatLong.Lat</td>
+            <td>@item.LatLong.Long</td>
+            <td>
+                <button @onclick="() => ShowMap(item)">Show Map</button>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+@if(Point is not null)
+{
+    <GoogleMap Description="@Point.Description" Lat="@Point.LatLong.Lat" Long="@Point.LatLong.Long"
+                                     ApiKey="@GoogleKye"
+                                     @key="Point" />
+}
+
+@code{
+    IEnumerable<GooglePoint> Points = [];
+    GooglePoint Point = null;
+    string GoogleKye = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Points = await Client.GetPoints();
+        GoogleKye = await Client.GetKey();
+    }
+
+    void ShowMap(GooglePoint point)
+    {
+        Point = point;
+    }
+}

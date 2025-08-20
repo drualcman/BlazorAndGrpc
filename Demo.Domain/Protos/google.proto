@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option csharp_namespace = "googleLocation.gprc";
+
+package googleLocation;
+
+service GooglePoints {
+  rpc GetPoints (PointsRequest) returns (PointsReply);
+  rpc GetKey (EmptyRequest) returns (KeyReply);
+}
+
+message EmptyRequest {
+}
+
+message PointsRequest {
+  int32 top = 1;
+}
+
+message PointsReply {
+  repeated GooglePoint data = 1;
+}
+
+message KeyReply {
+  string key = 1;
+}
+
+message GooglePoint
+{
+    LatLong latLong = 1;
+    string description = 2;
+}
+
+ message LatLong
+{
+    double lat = 1;
+    double long = 2;
+}
+

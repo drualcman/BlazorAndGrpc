@@ -1,0 +1,30 @@
+﻿@inject IJSRuntime JS
+
+@if (!string.IsNullOrWhiteSpace(ApiKey))
+{
+    <div id="@_mapId" class="map"></div>
+}
+@code {
+    [Parameter] public string ApiKey { get; set; }
+    [Parameter] public double Lat { get; set; }
+    [Parameter] public double Long { get; set; }
+    [Parameter] public string Description { get; set; }
+
+    private string _mapId = $"map_{Guid.NewGuid()}";
+    private string _scriptId = "googleMapsScript";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!string.IsNullOrWhiteSpace(ApiKey))
+            {
+                bool loaded = await JS.InvokeAsync<bool>("GoogleMapsWrapper.load", ApiKey, _scriptId);
+                if (loaded)
+                {
+                    await JS.InvokeVoidAsync("GoogleMapsWrapper.initMap", _mapId, Lat, Long, Description);
+                }
+            }
+        }
+    }
+}
