@@ -1,42 +1,26 @@
-﻿using Demo.Client.Blazor.Options;
-using googleLocation.gprc;
-using Grpc.Net.Client;
-using Grpc.Net.Client.Web;
-using Microsoft.Extensions.Options;
+﻿using googleLocation.gprc;
 
 namespace Demo.Client.Blazor.Services;
 
 public class GoogleClient
 {
-    private readonly GoogleOptions GoogleOptions;
+    private readonly GooglePoints.GooglePointsClient Client;
 
-    public GoogleClient(IOptions<GoogleOptions> options)
+    public GoogleClient(GooglePoints.GooglePointsClient client)
     {
-        GoogleOptions = options.Value;
+        Client = client;
     }
 
     public async Task<IEnumerable<GooglePoint>> GetPoints()
     {
-        var channel = GrpcChannel.ForAddress(GoogleOptions.Url, new GrpcChannelOptions
-        {
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
-        });
-
-        var client = new GooglePoints.GooglePointsClient(channel);
-        var response = await client.GetPointsAsync(
+        var response = await Client.GetPointsAsync(
                           new PointsRequest { Top = 10 });
         return response.Data;
     }
 
     public async Task<string> GetKey()
     {
-        var channel = GrpcChannel.ForAddress(GoogleOptions.Url, new GrpcChannelOptions
-        {
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
-        });
-
-        var client = new GooglePoints.GooglePointsClient(channel);
-        var response = await client.GetKeyAsync(
+        var response = await Client.GetKeyAsync(
                           new EmptyRequest());
         return response.Key;
     }
