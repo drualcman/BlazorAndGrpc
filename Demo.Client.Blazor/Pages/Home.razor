@@ -1,6 +1,5 @@
 ﻿@page "/"
 @inject GoogleClient Client
-@inject IJSRuntime JS
 
 <PageTitle>Home</PageTitle>
 
@@ -24,19 +23,35 @@
 @if(Point is not null)
 {
     <GoogleMap Description="@Point.Description" Lat="@Point.LatLong.Lat" Long="@Point.LatLong.Long"
-                                     ApiKey="@GoogleKye"
+                                     ApiKey="@GoogleKey"
                                      @key="Point" />
 }
 
 @code{
     IEnumerable<GooglePoint> Points = [];
     GooglePoint Point = null;
-    string GoogleKye = string.Empty;
+    string GoogleKey = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         Points = await Client.GetPoints();
-        GoogleKye = await Client.GetKey();
+        GoogleKey = await Client.GetKey();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ShowMap(new GooglePoint
+            {
+                LatLong = new LatLong
+                {
+                    Lat = 15.17,
+                    Long = 120.59
+                },
+                Description = "Sergi's house"
+            });
+        }
     }
 
     void ShowMap(GooglePoint point)
